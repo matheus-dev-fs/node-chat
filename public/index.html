@@ -8,29 +8,31 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 
-<body >
+<body>
     <div id="login-page" class="h-screen bg-gray-100 hidden items-center justify-center flex-col gap-4">
         <h1 class="text-xl">Qual seu nome?</h1>
-        <input 
-            type="text" 
-            id="login-name-input" 
-            class="border border-black bg-gray-200 text-lg p-3 rounded-md outline-none w-full max-w-sm"
-        >
+        <input type="text" id="login-name-input"
+            class="border border-black bg-gray-200 text-lg p-3 rounded-md outline-none w-full max-w-sm">
     </div>
 
     <div id="chat-page" class="h-screen bg-gray-100 flex items-center justify-center flex-col">
         <div class="flex-1 w-full flex">
-            <ul class="flex-1 bg-white"></ul>
-            <ul class="w-48 bg-gray-200"></ul>
+            <ul class="flex-1 bg-white overflow-y-scroll max-h-[calc(100vh-40px)]">
+                <li class="message m-status">Fulano entrou na sala</li>
+                <li class="message m-status">Fulano saiu da sala</li>
+                <li class="message m-txt"><span>Fulano:</span> Olá, tudo bem?</li>
+                <li class="message m-txt"><span class="me">Você:</span> Tudo bem, obrigado!</li>
+            </ul>
+            <ul class="w-48 bg-gray-200 overflow-y-scroll max-h-[calc(100vh-40px)]">
+                <li class="user">Dua Lipa (você)</li>
+                <li class="user">Joan Jett</li>
+                <li class="user">Jessie J</li>
+            </ul>
         </div>
 
         <div class="w-full flex">
-            <input 
-                type="text" 
-                id="chat-text-input"
-                placeholder="Digite uma mensagem (Enter para enviar)"
-                class="flex-1 h-10 px-3 text-sm bg-gray-200 outline-none border-none"
-            />
+            <input type="text" id="chat-text-input" placeholder="Digite uma mensagem (Enter para enviar)"
+                class="flex-1 h-10 px-3 text-sm bg-gray-200 outline-none border-none" />
         </div>
     </div>
 </body>
