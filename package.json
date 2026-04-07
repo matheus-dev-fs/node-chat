@@ -17,13 +17,18 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "tsx watch src/server.ts",
+        "client:build": "esbuild src/main.ts --bundle --platform=browser --format=esm --outfile=public/main.js",
+        "client:watch": "esbuild src/main.ts --bundle --platform=browser --format=esm --outfile=public/main.js --watch",
         "css:build": "tailwindcss -i ./src/styles.css -o ./public/styles.css --minify",
         "css:watch": "tailwindcss -i ./src/styles.css -o ./public/styles.css --watch"
     },
     "devDependencies": {
         "@types/dotenv": "^6.1.1",
         "@types/express": "^5.0.6",
+        "@types/socket.io": "^3.0.1",
+        "@types/socket.io-client": "^1.4.36",
         "autoprefixer": "^10.4.27",
+        "esbuild": "^0.28.0",
         "postcss": "^8.5.8",
         "tailwindcss": "^3.4.19",
         "tsx": "^4.21.0",
@@ -31,6 +36,8 @@
     },
     "dependencies": {
         "dotenv": "^17.4.1",
-        "express": "^5.2.1"
+        "express": "^5.2.1",
+        "socket.io": "^4.8.3",
+        "socket.io-client": "^4.8.3"
     }
 }
