@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import type { UserData } from "./types/user-data.type.js";
 import type { ChatElements } from "./types/chat-elements.type.js";
 import * as DOMHelper from "./helpers/dom.helper.js";
+import type { ListUpdate } from "./types/list-update.type.js";
 
 const socket: Socket<DefaultEventsMap, DefaultEventsMap> = io();
 
@@ -34,6 +35,11 @@ socket.on("join-request-success", (connectedUsers: string[]): void => {
     userData.userList = connectedUsers;
     changeToChatPage();
     focusTextInput();
+    DOMHelper.renderUserList(userData.userList, elements.usersList);
+});
+
+socket.on("list-update", (update: ListUpdate): void => {
+    userData.userList = update.list;
     DOMHelper.renderUserList(userData.userList, elements.usersList);
 });
 

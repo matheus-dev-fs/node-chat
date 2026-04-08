@@ -3418,11 +3418,15 @@ var getChatElements = () => {
 var renderUserList = (userList, userListContainer) => {
   userListContainer.innerHTML = "";
   userList.forEach((user) => {
-    const userElement = document.createElement("li");
-    userElement.classList.add("user");
-    userElement.textContent = user;
+    const userElement = createUserElement(user);
     userListContainer.appendChild(userElement);
   });
+};
+var createUserElement = (user) => {
+  const userElement = document.createElement("li");
+  userElement.classList.add("user");
+  userElement.textContent = user;
+  return userElement;
 };
 
 // src/main.ts
@@ -3448,6 +3452,10 @@ socket.on("join-request-success", (connectedUsers) => {
   userData.userList = connectedUsers;
   changeToChatPage();
   focusTextInput();
+  renderUserList(userData.userList, elements.usersList);
+});
+socket.on("list-update", (update) => {
+  userData.userList = update.list;
   renderUserList(userData.userList, elements.usersList);
 });
 var setUserData = (userData2, name) => {

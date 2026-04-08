@@ -22,6 +22,10 @@ io.on("connection", (socket) => {
         console.log(connectedUsers)
 
         socket.emit("join-request-success", connectedUsers);
+        socket.broadcast.emit("list-update", { 
+            joined: name, 
+            list: connectedUsers 
+        });
     });
 });
 
