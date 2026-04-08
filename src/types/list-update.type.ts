@@ -1,4 +1,5 @@
 export type ListUpdate = {
-    joined: string;
+    joined?: string;
+    left?: string;
     list: string[];
 }

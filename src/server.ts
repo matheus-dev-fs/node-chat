@@ -8,7 +8,7 @@ import type { SocketData } from "./types/socket-data.type.js";
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, SocketData>(httpServer);
 
-const connectedUsers: string[] = [];
+let connectedUsers: string[] = [];
 
 io.on("connection", (socket) => {
     socket.on("join-request", (name: string): void => {
@@ -22,9 +22,21 @@ io.on("connection", (socket) => {
         console.log(connectedUsers)
 
         socket.emit("join-request-success", connectedUsers);
+
         socket.broadcast.emit("list-update", { 
             joined: name, 
             list: connectedUsers 
+        });
+
+        socket.on("disconnect", () => {
+            connectedUsers = connectedUsers.filter((user: string): boolean => user !== socket.data.username);
+
+            socket.broadcast.emit("list-update", {
+                left: socket.data.username as string,
+                list: connectedUsers
+            });
+
+            console.log(connectedUsers);
         });
     });
 });
