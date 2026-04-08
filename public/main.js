@@ -3405,5 +3405,45 @@ Object.assign(lookup2, {
   connect: lookup2
 });
 
+// src/helpers/dom.helper.ts
+var getChatElements = () => {
+  return {
+    loginPage: document.getElementById("login-page"),
+    chatPage: document.getElementById("chat-page"),
+    loginInput: document.getElementById("login-name-input"),
+    textInput: document.getElementById("chat-text-input")
+  };
+};
+
 // src/main.ts
 var socket = lookup2();
+var userData = {
+  name: "",
+  userList: []
+};
+var elements = getChatElements();
+elements.loginInput.addEventListener("keyup", (event) => {
+  if (event.key !== "Enter") {
+    return;
+  }
+  const name = elements.loginInput.value.trim();
+  if (name.length === 0) {
+    return;
+  }
+  setUserData(userData, name);
+  setPageTitle(userData);
+  changeToChatPage();
+});
+var setUserData = (userData2, name) => {
+  userData2.name = name;
+  userData2.userList.push(name);
+};
+var setPageTitle = (userData2) => {
+  document.title = `Chat - ${userData2.name}`;
+};
+var changeToChatPage = () => {
+  elements.loginPage.classList.remove("flex");
+  elements.loginPage.classList.add("hidden");
+  elements.chatPage.classList.remove("hidden");
+  elements.chatPage.classList.add("flex");
+};
