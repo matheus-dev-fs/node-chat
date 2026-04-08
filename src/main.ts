@@ -4,6 +4,7 @@ import type { UserData } from "./types/user-data.type.js";
 import type { ChatElements } from "./types/chat-elements.type.js";
 import * as DOMHelper from "./helpers/dom.helper.js";
 import type { ListUpdate } from "./types/list-update.type.js";
+import type { Message } from "./types/message.type.js";
 
 const socket: Socket<DefaultEventsMap, DefaultEventsMap> = io();
 
@@ -14,7 +15,7 @@ const userData: UserData = {
 
 const elements: ChatElements = DOMHelper.getChatElements();
 
-elements.loginInput.addEventListener('keyup', (event: KeyboardEvent) => {
+elements.loginInput.addEventListener('keyup', (event: KeyboardEvent): void => {
     if (event.key !== "Enter") {
         return;
     }
@@ -30,6 +31,21 @@ elements.loginInput.addEventListener('keyup', (event: KeyboardEvent) => {
     emitJoinRequest(userData.name);
 });
 
+elements.textInput.addEventListener('keyup', (event: KeyboardEvent): void => {
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    const message: string = elements.textInput.value.trim();
+
+    if (message.length === 0) {
+        return;
+    }
+
+    socket.emit("send-message", message);
+
+    clearInput(elements.textInput);
+});
 
 socket.on("join-request-success", (connectedUsers: string[]): void => {
     userData.userList = connectedUsers;
@@ -48,6 +64,15 @@ socket.on("list-update", (update: ListUpdate): void => {
     } else if (update.left) {
         DOMHelper.addMessageToChat(elements.chatList, 'status', `${update.left} saiu da sala.`);
     }
+});
+
+socket.on("new-message", (message: Message): void => {
+    DOMHelper.addMessageToChat(
+        elements.chatList, 'msg', 
+        message.message, 
+        message.username, 
+        message.username === userData.name
+    );
 });
 
 const setUserData = (userData: UserData, name: string): void => {
@@ -71,6 +96,10 @@ const emitJoinRequest = (name: string): void => {
     socket.emit("join-request", name);
 }
 
-export const focusTextInput = (): void => {
+const focusTextInput = (): void => {
     elements.textInput.focus();
+}
+
+const clearInput = (input: HTMLInputElement): void => {
+    input.value = "";
 }

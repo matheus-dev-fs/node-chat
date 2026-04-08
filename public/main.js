@@ -3423,24 +3423,28 @@ var renderUserList = (userList, userListContainer) => {
     userListContainer.appendChild(userElement);
   });
 };
-var addMessageToChat = (chatListContainer, type, msg, user) => {
+var addMessageToChat = (chatListContainer, type, msg, user, me) => {
   switch (type) {
     case "status":
       chatListContainer.appendChild(createMessageElement("status", msg));
       break;
     case (user && "msg"):
-      chatListContainer.appendChild(createMessageElement("msg", msg, user));
+      chatListContainer.appendChild(createMessageElement("msg", msg, user, me));
       break;
   }
 };
-var createMessageElement = (type, msg, user) => {
+var createMessageElement = (type, msg, user, me) => {
   const messageElement = document.createElement("li");
   if (type === "status") {
     messageElement.classList.add("m-status");
     messageElement.textContent = msg;
   } else if (type === "msg" && user) {
     messageElement.classList.add("m-txt");
-    messageElement.innerHTML = `<span>${user}</span>: ${msg}`;
+    if (me) {
+      messageElement.innerHTML = `<span class="me">${user}</span>: ${msg}`;
+    } else {
+      messageElement.innerHTML = `<span>${user}</span>: ${msg}`;
+    }
   }
   return messageElement;
 };
@@ -3470,6 +3474,17 @@ elements.loginInput.addEventListener("keyup", (event) => {
   setPageTitle(userData);
   emitJoinRequest(userData.name);
 });
+elements.textInput.addEventListener("keyup", (event) => {
+  if (event.key !== "Enter") {
+    return;
+  }
+  const message = elements.textInput.value.trim();
+  if (message.length === 0) {
+    return;
+  }
+  socket.emit("send-message", message);
+  clearInput(elements.textInput);
+});
 socket.on("join-request-success", (connectedUsers) => {
   userData.userList = connectedUsers;
   changeToChatPage();
@@ -3485,6 +3500,15 @@ socket.on("list-update", (update) => {
   } else if (update.left) {
     addMessageToChat(elements.chatList, "status", `${update.left} saiu da sala.`);
   }
+});
+socket.on("new-message", (message) => {
+  addMessageToChat(
+    elements.chatList,
+    "msg",
+    message.message,
+    message.username,
+    message.username === userData.name
+  );
 });
 var setUserData = (userData2, name) => {
   userData2.name = name;
@@ -3505,6 +3529,6 @@ var emitJoinRequest = (name) => {
 var focusTextInput = () => {
   elements.textInput.focus();
 };
-export {
-  focusTextInput
+var clearInput = (input) => {
+  input.value = "";
 };

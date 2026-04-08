@@ -20,18 +20,24 @@ export const renderUserList = (userList: string[], userListContainer: HTMLElemen
     });
 }
 
-export const addMessageToChat = (chatListContainer: HTMLElement, type: 'status' | 'msg', msg: string, user?: string): void => {
+export const addMessageToChat = (
+    chatListContainer: HTMLElement, 
+    type: 'status' | 'msg', 
+    msg: string, 
+    user?: string,
+    me?: boolean
+): void => {
     switch (type) {
         case 'status':
             chatListContainer.appendChild(createMessageElement('status', msg));
             break;
         case user && 'msg':
-            chatListContainer.appendChild(createMessageElement('msg', msg, user));
+            chatListContainer.appendChild(createMessageElement('msg', msg, user, me));
             break;
     }
 }
 
-const createMessageElement = (type: 'status' | 'msg', msg: string, user?: string): HTMLElement => {
+const createMessageElement = (type: 'status' | 'msg', msg: string, user?: string, me?: boolean): HTMLElement => {
     const messageElement: HTMLElement = document.createElement("li");
 
     if (type === 'status') {
@@ -39,7 +45,12 @@ const createMessageElement = (type: 'status' | 'msg', msg: string, user?: string
         messageElement.textContent = msg;
     } else if (type === 'msg' && user) {
         messageElement.classList.add("m-txt");
-        messageElement.innerHTML = `<span>${user}</span>: ${msg}`;
+
+        if (me) {
+           messageElement.innerHTML = `<span class="me">${user}</span>: ${msg}`;
+        } else {
+            messageElement.innerHTML = `<span>${user}</span>: ${msg}`;
+        }
     }
     
     return messageElement;

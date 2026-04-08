@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import type { ClientToServerEvents } from "./types/cliente-to-server-events.type.js";
 import type { ServerToClientEvents } from "./types/server-to-client-events.type.js";
 import type { SocketData } from "./types/socket-data.type.js";
+import type { Message } from "./types/message.type.js";
 
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, {}, SocketData>(httpServer);
@@ -37,6 +38,16 @@ io.on("connection", (socket) => {
             });
 
             console.log(connectedUsers);
+        });
+
+        socket.on("send-message", (message: string): void => {
+            const messageData: Message = {
+                username: socket.data.username as string,
+                message: message
+            };
+
+            socket.emit("new-message", messageData);
+            socket.broadcast.emit("new-message", messageData);
         });
     });
 });
