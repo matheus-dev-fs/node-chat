@@ -1,4 +1,4 @@
-# Node Chat (Socket.IO) — Projeto de Estudo
+# Node Chat (Socket.IO)
 
 Este projeto foi desenvolvido durante o curso de Node.js da **B7WEB** (aula de chat com sockets), porém **foi amplamente aprimorado por mim em relação ao projeto original do curso**, com várias melhorias de arquitetura, organização do código e experiência de desenvolvimento.
 
