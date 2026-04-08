@@ -60,7 +60,7 @@ socket.on("list-update", (update: ListUpdate): void => {
     DOMHelper.renderUserList(userData.userList, elements.usersList);
 
     if (update.joined) {
-        DOMHelper.addMessageToChat(elements.chatList, 'status',  `${update.joined} entrou na sala.`);
+        DOMHelper.addMessageToChat(elements.chatList, 'status', `${update.joined} entrou na sala.`);
     } else if (update.left) {
         DOMHelper.addMessageToChat(elements.chatList, 'status', `${update.left} saiu da sala.`);
     }
@@ -68,11 +68,35 @@ socket.on("list-update", (update: ListUpdate): void => {
 
 socket.on("new-message", (message: Message): void => {
     DOMHelper.addMessageToChat(
-        elements.chatList, 'msg', 
-        message.message, 
-        message.username, 
+        elements.chatList, 'msg',
+        message.message,
+        message.username,
         message.username === userData.name
     );
+
+    scrollChatToBottom(elements.chatList);
+});
+
+socket.on("disconnect", (): void => {
+    DOMHelper.addMessageToChat(elements.chatList, "status", "Você foi desconectado.");
+    userData.userList = [];
+    DOMHelper.renderUserList(userData.userList, elements.usersList);
+});
+
+socket.io.on("reconnect_attempt", () => {
+    DOMHelper.addMessageToChat(elements.chatList, "status", "Tentando reconectar...");
+});
+
+socket.io.on("reconnect", () => {
+    DOMHelper.addMessageToChat(elements.chatList, "status", "reconectado.");
+
+    if (userData.name) {
+        emitJoinRequest(userData.name);
+    }
+});
+
+socket.io.on("reconnect_error", () => {
+    DOMHelper.addMessageToChat(elements.chatList, "status", "falha na reconexão.");
 });
 
 const setUserData = (userData: UserData, name: string): void => {
@@ -102,4 +126,8 @@ const focusTextInput = (): void => {
 
 const clearInput = (input: HTMLInputElement): void => {
     input.value = "";
+}
+
+const scrollChatToBottom = (chatList: HTMLElement): void => {
+    chatList.scrollTop = chatList.scrollHeight;
 }

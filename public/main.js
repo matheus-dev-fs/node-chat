@@ -3509,6 +3509,24 @@ socket.on("new-message", (message) => {
     message.username,
     message.username === userData.name
   );
+  scrollChatToBottom(elements.chatList);
+});
+socket.on("disconnect", () => {
+  addMessageToChat(elements.chatList, "status", "Voc\xEA foi desconectado.");
+  userData.userList = [];
+  renderUserList(userData.userList, elements.usersList);
+});
+socket.io.on("reconnect_attempt", () => {
+  addMessageToChat(elements.chatList, "status", "Tentando reconectar...");
+});
+socket.io.on("reconnect", () => {
+  addMessageToChat(elements.chatList, "status", "reconectado.");
+  if (userData.name) {
+    emitJoinRequest(userData.name);
+  }
+});
+socket.io.on("reconnect_error", () => {
+  addMessageToChat(elements.chatList, "status", "falha na reconex\xE3o.");
 });
 var setUserData = (userData2, name) => {
   userData2.name = name;
@@ -3531,4 +3549,7 @@ var focusTextInput = () => {
 };
 var clearInput = (input) => {
   input.value = "";
+};
+var scrollChatToBottom = (chatList) => {
+  chatList.scrollTop = chatList.scrollHeight;
 };

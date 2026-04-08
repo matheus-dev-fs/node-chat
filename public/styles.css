@@ -655,6 +655,11 @@ video {
   padding-right: 0.75rem;
 }
 
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -668,6 +673,31 @@ video {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
+}
+
+.placeholder-gray-900::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-placeholder-opacity, 1));
+}
+
+.placeholder-gray-900::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-placeholder-opacity, 1));
+}
+
+.placeholder-gray-800::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-placeholder-opacity, 1));
+}
+
+.placeholder-gray-800::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-placeholder-opacity, 1));
 }
 
 .outline-none {
