@@ -3,4 +3,5 @@ export type ChatElements = {
     chatPage: HTMLElement;
     loginInput: HTMLInputElement;
     textInput: HTMLInputElement;
+    usersList: HTMLElement;
 }

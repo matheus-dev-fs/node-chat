@@ -3411,8 +3411,18 @@ var getChatElements = () => {
     loginPage: document.getElementById("login-page"),
     chatPage: document.getElementById("chat-page"),
     loginInput: document.getElementById("login-name-input"),
-    textInput: document.getElementById("chat-text-input")
+    textInput: document.getElementById("chat-text-input"),
+    usersList: document.getElementById("users-list")
   };
+};
+var renderUserList = (userList, userListContainer) => {
+  userListContainer.innerHTML = "";
+  userList.forEach((user) => {
+    const userElement = document.createElement("li");
+    userElement.classList.add("user");
+    userElement.textContent = user;
+    userListContainer.appendChild(userElement);
+  });
 };
 
 // src/main.ts
@@ -3432,7 +3442,13 @@ elements.loginInput.addEventListener("keyup", (event) => {
   }
   setUserData(userData, name);
   setPageTitle(userData);
+  emitJoinRequest(userData.name);
+});
+socket.on("join-request-success", (connectedUsers) => {
+  userData.userList = connectedUsers;
   changeToChatPage();
+  focusTextInput();
+  renderUserList(userData.userList, elements.usersList);
 });
 var setUserData = (userData2, name) => {
   userData2.name = name;
@@ -3446,4 +3462,13 @@ var changeToChatPage = () => {
   elements.loginPage.classList.add("hidden");
   elements.chatPage.classList.remove("hidden");
   elements.chatPage.classList.add("flex");
+};
+var emitJoinRequest = (name) => {
+  socket.emit("join-request", name);
+};
+var focusTextInput = () => {
+  elements.textInput.focus();
+};
+export {
+  focusTextInput
 };

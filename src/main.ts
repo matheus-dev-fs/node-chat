@@ -26,7 +26,15 @@ elements.loginInput.addEventListener('keyup', (event: KeyboardEvent) => {
 
     setUserData(userData, name);
     setPageTitle(userData);
+    emitJoinRequest(userData.name);
+});
+
+
+socket.on("join-request-success", (connectedUsers: string[]): void => {
+    userData.userList = connectedUsers;
     changeToChatPage();
+    focusTextInput();
+    DOMHelper.renderUserList(userData.userList, elements.usersList);
 });
 
 const setUserData = (userData: UserData, name: string): void => {
@@ -45,3 +53,11 @@ const changeToChatPage = (): void => {
     elements.chatPage.classList.remove('hidden');
     elements.chatPage.classList.add('flex');
 };
+
+const emitJoinRequest = (name: string): void => {
+    socket.emit("join-request", name);
+}
+
+export const focusTextInput = (): void => {
+    elements.textInput.focus();
+}
