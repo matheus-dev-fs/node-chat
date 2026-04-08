@@ -36,11 +36,18 @@ socket.on("join-request-success", (connectedUsers: string[]): void => {
     changeToChatPage();
     focusTextInput();
     DOMHelper.renderUserList(userData.userList, elements.usersList);
+    DOMHelper.addMessageToChat(elements.chatList, 'status', "entrou na sala.");
 });
 
 socket.on("list-update", (update: ListUpdate): void => {
     userData.userList = update.list;
     DOMHelper.renderUserList(userData.userList, elements.usersList);
+
+    if (update.joined) {
+        DOMHelper.addMessageToChat(elements.chatList, 'status',  `${update.joined} entrou na sala.`);
+    } else if (update.left) {
+        DOMHelper.addMessageToChat(elements.chatList, 'status', `${update.left} saiu da sala.`);
+    }
 });
 
 const setUserData = (userData: UserData, name: string): void => {

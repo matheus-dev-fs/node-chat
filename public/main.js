@@ -3412,6 +3412,7 @@ var getChatElements = () => {
     chatPage: document.getElementById("chat-page"),
     loginInput: document.getElementById("login-name-input"),
     textInput: document.getElementById("chat-text-input"),
+    chatList: document.getElementById("chat-list"),
     usersList: document.getElementById("users-list")
   };
 };
@@ -3421,6 +3422,27 @@ var renderUserList = (userList, userListContainer) => {
     const userElement = createUserElement(user);
     userListContainer.appendChild(userElement);
   });
+};
+var addMessageToChat = (chatListContainer, type, msg, user) => {
+  switch (type) {
+    case "status":
+      chatListContainer.appendChild(createMessageElement("status", msg));
+      break;
+    case (user && "msg"):
+      chatListContainer.appendChild(createMessageElement("msg", msg, user));
+      break;
+  }
+};
+var createMessageElement = (type, msg, user) => {
+  const messageElement = document.createElement("li");
+  if (type === "status") {
+    messageElement.classList.add("m-status");
+    messageElement.textContent = msg;
+  } else if (type === "msg" && user) {
+    messageElement.classList.add("m-txt");
+    messageElement.innerHTML = `<span>${user}</span>: ${msg}`;
+  }
+  return messageElement;
 };
 var createUserElement = (user) => {
   const userElement = document.createElement("li");
@@ -3453,10 +3475,16 @@ socket.on("join-request-success", (connectedUsers) => {
   changeToChatPage();
   focusTextInput();
   renderUserList(userData.userList, elements.usersList);
+  addMessageToChat(elements.chatList, "status", "entrou na sala.");
 });
 socket.on("list-update", (update) => {
   userData.userList = update.list;
   renderUserList(userData.userList, elements.usersList);
+  if (update.joined) {
+    addMessageToChat(elements.chatList, "status", `${update.joined} entrou na sala.`);
+  } else if (update.left) {
+    addMessageToChat(elements.chatList, "status", `${update.left} saiu da sala.`);
+  }
 });
 var setUserData = (userData2, name) => {
   userData2.name = name;
