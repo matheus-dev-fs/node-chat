@@ -3455,97 +3455,20 @@ var createUserElement = (user) => {
   return userElement;
 };
 
-// src/main.ts
-var socket = lookup2();
-var userData = {
-  name: "",
-  userList: []
+// src/chat/actions/socket.actions.ts
+var emitJoinRequest = (socket2, name) => {
+  socket2.emit("join-request", name);
 };
-var elements = getChatElements();
-elements.loginInput.addEventListener("keyup", (event) => {
-  if (event.key !== "Enter") {
-    return;
-  }
-  const name = elements.loginInput.value.trim();
-  if (name.length === 0) {
-    return;
-  }
-  setUserData(userData, name);
-  setPageTitle(userData);
-  emitJoinRequest(userData.name);
-});
-elements.textInput.addEventListener("keyup", (event) => {
-  if (event.key !== "Enter") {
-    return;
-  }
-  const message = elements.textInput.value.trim();
-  if (message.length === 0) {
-    return;
-  }
-  socket.emit("send-message", message);
-  clearInput(elements.textInput);
-});
-socket.on("join-request-success", (connectedUsers) => {
-  userData.userList = connectedUsers;
-  changeToChatPage();
-  focusTextInput();
-  renderUserList(userData.userList, elements.usersList);
-  addMessageToChat(elements.chatList, "status", "entrou na sala.");
-});
-socket.on("list-update", (update) => {
-  userData.userList = update.list;
-  renderUserList(userData.userList, elements.usersList);
-  if (update.joined) {
-    addMessageToChat(elements.chatList, "status", `${update.joined} entrou na sala.`);
-  } else if (update.left) {
-    addMessageToChat(elements.chatList, "status", `${update.left} saiu da sala.`);
-  }
-});
-socket.on("new-message", (message) => {
-  addMessageToChat(
-    elements.chatList,
-    "msg",
-    message.message,
-    message.username,
-    message.username === userData.name
-  );
-  scrollChatToBottom(elements.chatList);
-});
-socket.on("disconnect", () => {
-  addMessageToChat(elements.chatList, "status", "Voc\xEA foi desconectado.");
-  userData.userList = [];
-  renderUserList(userData.userList, elements.usersList);
-});
-socket.io.on("reconnect_attempt", () => {
-  addMessageToChat(elements.chatList, "status", "Tentando reconectar...");
-});
-socket.io.on("reconnect", () => {
-  addMessageToChat(elements.chatList, "status", "reconectado.");
-  if (userData.name) {
-    emitJoinRequest(userData.name);
-  }
-});
-socket.io.on("reconnect_error", () => {
-  addMessageToChat(elements.chatList, "status", "falha na reconex\xE3o.");
-});
-var setUserData = (userData2, name) => {
-  userData2.name = name;
-  userData2.userList.push(name);
+
+// src/chat/actions/ui.actions.ts
+var changeToChatPage = (elements2) => {
+  elements2.loginPage.classList.remove("flex");
+  elements2.loginPage.classList.add("hidden");
+  elements2.chatPage.classList.remove("hidden");
+  elements2.chatPage.classList.add("flex");
 };
-var setPageTitle = (userData2) => {
-  document.title = `Chat - ${userData2.name}`;
-};
-var changeToChatPage = () => {
-  elements.loginPage.classList.remove("flex");
-  elements.loginPage.classList.add("hidden");
-  elements.chatPage.classList.remove("hidden");
-  elements.chatPage.classList.add("flex");
-};
-var emitJoinRequest = (name) => {
-  socket.emit("join-request", name);
-};
-var focusTextInput = () => {
-  elements.textInput.focus();
+var focusTextInput = (elements2) => {
+  elements2.textInput.focus();
 };
 var clearInput = (input) => {
   input.value = "";
@@ -3553,3 +3476,98 @@ var clearInput = (input) => {
 var scrollChatToBottom = (chatList) => {
   chatList.scrollTop = chatList.scrollHeight;
 };
+
+// src/chat/actions/user-data.actions.ts
+var setUserData = (userData2, name) => {
+  userData2.name = name;
+  userData2.userList.push(name);
+};
+var setPageTitle = (userData2) => {
+  document.title = `Chat - ${userData2.name}`;
+};
+
+// src/chat/handlers/input.handlers.ts
+var registerInputHandlers = (elements2, userData2, socket2) => {
+  elements2.loginInput.addEventListener("keyup", (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+    const name = elements2.loginInput.value.trim();
+    if (name.length === 0) {
+      return;
+    }
+    setUserData(userData2, name);
+    setPageTitle(userData2);
+    emitJoinRequest(socket2, userData2.name);
+  });
+  elements2.textInput.addEventListener("keyup", (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+    const message = elements2.textInput.value.trim();
+    if (message.length === 0) {
+      return;
+    }
+    socket2.emit("send-message", message);
+    clearInput(elements2.textInput);
+  });
+};
+
+// src/chat/handlers/socket.handlers.ts
+var registerSocketHandlers = (elements2, userData2, socket2) => {
+  socket2.on("join-request-success", (connectedUsers) => {
+    userData2.userList = connectedUsers;
+    changeToChatPage(elements2);
+    focusTextInput(elements2);
+    renderUserList(userData2.userList, elements2.usersList);
+    addMessageToChat(elements2.chatList, "status", "entrou na sala.");
+  });
+  socket2.on("list-update", (update) => {
+    userData2.userList = update.list;
+    renderUserList(userData2.userList, elements2.usersList);
+    if (update.joined) {
+      addMessageToChat(elements2.chatList, "status", `${update.joined} entrou na sala.`);
+    } else if (update.left) {
+      addMessageToChat(elements2.chatList, "status", `${update.left} saiu da sala.`);
+    }
+  });
+  socket2.on("new-message", (message) => {
+    addMessageToChat(
+      elements2.chatList,
+      "msg",
+      message.message,
+      message.username,
+      message.username === userData2.name
+    );
+    scrollChatToBottom(elements2.chatList);
+  });
+  socket2.on("disconnect", () => {
+    addMessageToChat(elements2.chatList, "status", "Voc\xEA foi desconectado.");
+    userData2.userList = [];
+    renderUserList(userData2.userList, elements2.usersList);
+  });
+  socket2.io.on("reconnect_attempt", () => {
+    addMessageToChat(elements2.chatList, "status", "Tentando reconectar...");
+  });
+  socket2.io.on("reconnect", () => {
+    addMessageToChat(elements2.chatList, "status", "reconectado.");
+    if (userData2.name) {
+      emitJoinRequest(socket2, userData2.name);
+    }
+  });
+  socket2.io.on("reconnect_error", () => {
+    addMessageToChat(elements2.chatList, "status", "falha na reconex\xE3o.");
+  });
+};
+
+// src/data/user.data.ts
+var userData = {
+  name: "",
+  userList: []
+};
+
+// src/main.ts
+var socket = lookup2();
+var elements = getChatElements();
+registerInputHandlers(elements, userData, socket);
+registerSocketHandlers(elements, userData, socket);
